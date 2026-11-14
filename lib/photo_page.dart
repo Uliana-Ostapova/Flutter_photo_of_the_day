@@ -11,6 +11,16 @@ class PhotoPage extends StatefulWidget {
 }
 
 class _PhotoPageState extends State<PhotoPage> {
+
+  final List<String> _LocalPhotos = [
+    'assets/images/photo1.jpg',
+    'assets/images/photo2.jpg',
+    'assets/images/photo3.jpg',
+    'assets/images/photo4.jpg',
+    'assets/images/photo5.jpg',
+    'assets/images/photo6.jpg',
+  ];
+  
   String? _imageUrl;
   bool _isLoading = false;
   String? _errorMassage;
@@ -24,23 +34,13 @@ class _PhotoPageState extends State<PhotoPage> {
     });
 
     try {
-      String url;
-      http.Response response;
-
-      if (_animalType == PhotoType.dog) {
-        url = 'https://dog.ceo/api/breeds/image/random';
-        response = await http.get(Uri.parse(url));
-        Map<String, dynamic> data = jsonDecode(
-          response.body,
-        );
-        _imageUrl = data['message'];
-      } else {
-        final random = 
-          DateTime.now().millisecondsSinceEpoch;
-        _imageUrl = 'https://picsum/photos/seed/$random/800/800';
-      }
+      await Future.delayed(const Duration(seconds: 2));
+      final randomIndex =
+        DateTime.now().millisecondsSinceEpoch %
+        _LocalPhotos.length;
+    _imageUrl = _LocalPhotos[randomIndex];
     } catch (e) {
-      _errorMassage = 'Не удалось загрузить фото.\nПроверьте подключение к интернету.';
+      _errorMassage = 'Ошибка загрузки фото';
     }
 
     setState(() {
@@ -137,7 +137,7 @@ class _PhotoPageState extends State<PhotoPage> {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.network(
+            child: Image.asset(
               _imageUrl!,
               fit: BoxFit.cover,
               width: double.infinity,
