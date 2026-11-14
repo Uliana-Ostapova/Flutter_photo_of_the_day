@@ -58,86 +58,126 @@ class _PhotoPageState extends State<PhotoPage> {
       body: Column(
         children: [
           const SizedBox(height: 20,),
-          Widget _buildAnimalToggle() {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ChoiceChip(
-                  label: const Text('🐶 Собаки'),
-                  selected: _animalType == PhotoType.dog,
-                  onSelected: (selected) {
-                    if (selected) {
-                      setState(() {
-                        _animalType = PhotoType.dog;
-                        _imageUrl = null;
-                        _errorMassage = null;
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(width: 12,),
-                ChoiceChip(
-                  label: const Text('🌄 Пейзаж'),
-                  selected: -_animalType == PhotoType.landscapes,
-                  onSelected: (selected) {
-                    if (selected) {
-                      setState(() {
-                        _animalType = PhotoType.landscapes;
-                        _imageUrl = null;
-                        _errorMassage = null;
-                      });
-                    }
-                  },
-                ),
-              ],
-            );
-          }
+          _buildAnimalToggle(),
           const SizedBox(height: 20,),
-          Widget _buildContext() {
-            if (_isLoading) {
-              return const Expanded(
-                child: Center( child: CircularProgressIndicator()),
-              );
-            }
-
-            if (_errorMessage != null) {
-              return Expanded(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(
-                      _errorMessage!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }
-
-            if (_imageUrl != null) {
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    cild: Image.network(
-                      _imageUrl!,
-                    )
-                  ),
-                  ))
-            }
-          }
+          _buildContent(),
           const SizedBox(height: 20,),
           _buildButton(),
           const SizedBox(height: 20,),
         ],
       )
+    );
+  }
+
+  Widget _buildAnimalToggle() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ChoiceChip(
+          label: const Text('🐶 Собаки'),
+          selected: _animalType == PhotoType.dog,
+          onSelected: (selected) {
+            if (selected) {
+              setState(() {
+                _animalType = PhotoType.dog;
+                _imageUrl = null;
+                _errorMassage = null;
+              });
+            }
+          },
+        ),
+        const SizedBox(width: 12,),
+        ChoiceChip(
+          label: const Text('🌄 Пейзаж'),
+          selected: _animalType == PhotoType.landscapes,
+          onSelected: (selected) {
+            if (selected) {
+              setState(() {
+                _animalType = PhotoType.landscapes;
+                _imageUrl = null;
+                _errorMassage = null;
+              });
+            }
+          },
+        ),
+      ],
+    );
+  }
+          
+  Widget _buildContent() {
+    if (_isLoading) {
+      return const Expanded(
+        child: Center( child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_errorMassage != null) {
+      return Expanded(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              _errorMassage!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.red,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_imageUrl != null) {
+      return Expanded(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Image.network(
+              _imageUrl!,
+              fit: BoxFit.cover,
+              width: double.infinity,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return const Expanded(
+      child: Center(
+        child: Text(
+          'Нажмите кнопку\nчтобы загрузить фото',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 18,
+            color: Colors.grey,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildButton() {
+    String label = _animalType == PhotoType.dog
+      ? '🐶 Новая собака'
+      : '🌄 Новый пейзаж';
+            
+    return ElevatedButton(
+      onPressed: _isLoading ? null : _fetchPhoto,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 12,
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(fontSize: 16),
+        ),
+      ),
     );
   }
 }
